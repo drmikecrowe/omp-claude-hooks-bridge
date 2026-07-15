@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+
+# varlock resolves secrets into the process env at run time; never commit a
+# materialized .env. The committed .env.schema holds only op:// references.
+.env
+.env.local
+.env.*.local

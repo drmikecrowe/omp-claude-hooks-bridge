@@ -1,0 +1,40 @@
+{
+  "name": "@drmikecrowe/omp-claude-hooks-bridge",
+  "version": "0.2.2",
+  "description": "Bridge Claude Code hooks (.claude/settings.json) into omp (Oh My Pi) extension lifecycle events.",
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest run",
+    "release": "bash scripts/publish.sh",
+    "release:dry": "bash scripts/publish.sh --dry-run",
+    "prepublishOnly": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drmikecrowe/omp-claude-hooks-bridge.git"
+  },
+  "author": "drmikecrowe",
+  "bugs": {
+    "url": "https://github.com/drmikecrowe/omp-claude-hooks-bridge/issues"
+  },
+  "homepage": "https://github.com/drmikecrowe/omp-claude-hooks-bridge#readme",
+  "type": "module",
+  "keywords": [
+    "omp-package"
+  ],
+  "files": [
+    "index.ts",
+    "README.md"
+  ],
+  "omp": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "devDependencies": {
+    "vitest": "^4.1.9"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
