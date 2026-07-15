@@ -4,12 +4,23 @@
  * Bridges Claude Code hooks (`.claude/settings.json`) into omp (Oh My Pi)
  * extension lifecycle events.
  *
- * Origins: adapted from `pi` to `omp`. Derived from the `claude-hooks-bridge`
- * package in the Jonghakseo/pi-extension monorepo
- * (https://github.com/Jonghakseo/pi-extension), originally published as
- * `@ryan_nookpi/pi-extension-claude-hooks-bridge`. Ported to the omp extension
- * runtime and republished as `@drmikecrowe/omp-claude-hooks-bridge` under the
- * same MIT license. See README.md for the full attribution.
+ * ---------------------------------------------------------------------------
+ * UPSTREAM: this package reuses, as its foundation, the `claude-hooks-bridge`
+ * package from the Jonghakseo/pi-extension monorepo
+ * (https://github.com/Jonghakseo/pi-extension), originally published to npm
+ * as `@ryan_nookpi/pi-extension-claude-hooks-bridge`
+ * (https://www.npmjs.com/package/@ryan_nookpi/pi-extension-claude-hooks-bridge).
+ * All credit for the original hook-bridging design and implementation goes
+ * to that project's authors.
+ *
+ * This fork ports the implementation from the `pi` extension runtime to
+ * `omp` (Oh My Pi) and then enhances it: `CLAUDE_CONFIG_DIR`-aware home
+ * config resolution, hardened transcript file/directory permissions, a
+ * path-boundary-safe plugin scope check, and documentation of the hook
+ * execution trust model. See README.md's "Origins" section for the full
+ * list of what was reused vs. added. Republished as
+ * `@drmikecrowe/omp-claude-hooks-bridge` under the same MIT license.
+ * ---------------------------------------------------------------------------
  */
 import { spawn } from "node:child_process";
 import {

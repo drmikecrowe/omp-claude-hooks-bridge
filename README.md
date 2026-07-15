@@ -1,5 +1,13 @@
 # omp-claude-hooks-bridge
 
+> **Built on top of upstream.** This package reuses the `claude-hooks-bridge`
+> implementation from [`Jonghakseo/pi-extension`](https://github.com/Jonghakseo/pi-extension)
+> (originally published to npm as
+> [`@ryan_nookpi/pi-extension-claude-hooks-bridge`](https://www.npmjs.com/package/@ryan_nookpi/pi-extension-claude-hooks-bridge))
+> as its foundation, ports it to the omp runtime, and enhances it further.
+> Full attribution and the list of enhancements are in [Origins](#origins)
+> below — please credit the upstream authors if you reuse this code.
+
 Bridge [Claude Code hooks](https://docs.anthropic.com/en/docs/claude-code/hooks) (`.claude/settings.json`) into omp (Oh My Pi) extension lifecycle events.
 
 ## What it does
@@ -47,21 +55,51 @@ omp plugin install @drmikecrowe/omp-claude-hooks-bridge
 
 ## Origins
 
-Adapted from **pi** to **omp** (Oh My Pi).
-
-This extension began life as the `claude-hooks-bridge` package in the
-[`Jonghakseo/pi-extension`](https://github.com/Jonghakseo/pi-extension) monorepo,
-originally published to npm as
+**This package is not a from-scratch implementation — it reuses and builds
+on upstream work.** The entire hook-bridging design (settings discovery,
+matcher logic, hook execution, decision extraction, transcript handling)
+originates from the `claude-hooks-bridge` package in the
+[`Jonghakseo/pi-extension`](https://github.com/Jonghakseo/pi-extension)
+monorepo, originally published to npm as
 [`@ryan_nookpi/pi-extension-claude-hooks-bridge`](https://www.npmjs.com/package/@ryan_nookpi/pi-extension-claude-hooks-bridge).
+**All credit for the original design and implementation belongs to that
+project's authors.**
 
-This fork ports it to the [omp (Oh My Pi)](https://github.com/oh-my-pi) extension
-runtime and republishes it under the `@drmikecrowe` namespace as
-`@drmikecrowe/omp-claude-hooks-bridge`. Changes from upstream:
+### What was reused as-is
 
-- Targets omp extension packaging (`omp.extensions` manifest, `omp plugin install`).
-- Builds against the `@oh-my-pi/pi-coding-agent` extension SDK.
-- Naming and documentation rebranded from `pi` to `omp`.
+- The core hook lifecycle model (`SessionStart` / `UserPromptSubmit` /
+  `PreToolUse` / `PostToolUse` / `Stop`) and its mapping onto extension
+  events.
+- Settings discovery and merge order across project and home
+  `.claude/settings.json`.
+- Matcher-pattern matching, tool-name aliasing, and hook decision extraction
+  (`permissionDecision`, exit-code-2 blocking).
+- Transcript-file generation for `Stop` hooks.
 
-The core hook-bridging behavior is unchanged. Credit for the original
-implementation belongs to the upstream `pi-extension` authors; this package
-is distributed under the same MIT license.
+### What this fork ports and adds on top
+
+- **Runtime port**: targets omp extension packaging (`omp.extensions`
+  manifest, `omp plugin install`) and builds against the
+  `@oh-my-pi/pi-coding-agent` extension SDK instead of `pi`'s.
+- **`CLAUDE_CONFIG_DIR` support**: home-config resolution (`settings.json`,
+  `installed_plugins.json`) now honors the `CLAUDE_CONFIG_DIR` environment
+  variable, matching Claude Code's own documented config-dir override,
+  instead of hardcoding `~/.claude`.
+- **Security hardening**: transcript files and their directory are now
+  created with restrictive `0600`/`0700` permissions instead of umask
+  defaults, so session transcripts aren't world-readable on shared hosts;
+  the plugin project-scope check is now path-boundary-safe instead of a
+  raw prefix match, so a sibling directory can no longer inherit another
+  project's plugin hooks.
+- **Documentation**: a `Security` section spelling out exactly which hook
+  events execute unconfirmed shell commands and when, plus this expanded
+  attribution.
+
+Naming and documentation are rebranded from `pi` to `omp` throughout, and
+the package is republished under the `@drmikecrowe` namespace as
+`@drmikecrowe/omp-claude-hooks-bridge`, **distributed under the same MIT
+license as upstream** (see [`LICENSE`](./LICENSE), which carries forward
+the original copyright notice).
+
+If you fork or reuse this code further, please preserve this attribution
+chain back to [`Jonghakseo/pi-extension`](https://github.com/Jonghakseo/pi-extension).
