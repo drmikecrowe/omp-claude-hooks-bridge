@@ -325,7 +325,11 @@ function loadPluginHooks(cwd: string): ClaudeSettings[] {
       // Only include user-scoped plugins (apply everywhere), or project-scoped
       // plugins whose projectPath matches the current cwd.
       if (scope === "project" || scope === "local") {
-        if (!projectPath || !cwd.startsWith(projectPath)) continue;
+        if (
+          !projectPath ||
+          !(cwd === projectPath || cwd.startsWith(projectPath + path.sep))
+        )
+          continue;
       } else if (scope !== "user") {
         continue;
       }
@@ -593,14 +597,14 @@ function createTranscriptFile(
 ): string | undefined {
   try {
     const lines = toClaudeTranscriptLines(ctx);
-    mkdirSync(TRANSCRIPT_TMP_DIR, { recursive: true });
+    mkdirSync(TRANSCRIPT_TMP_DIR, { recursive: true, mode: 0o700 });
     const safeSessionId = sessionId.replace(/[^a-zA-Z0-9_-]/g, "_");
     const transcriptPath = path.join(
       TRANSCRIPT_TMP_DIR,
       `${safeSessionId}.jsonl`,
     );
     const content = lines.length > 0 ? `${lines.join("\n")}\n` : "";
-    writeFileSync(transcriptPath, content, "utf8");
+    writeFileSync(transcriptPath, content, { encoding: "utf8", mode: 0o600 });
     return transcriptPath;
   } catch {
     return undefined;
